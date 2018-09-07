@@ -6,17 +6,17 @@ const { InMemoryCache } = require("apollo-cache-inmemory");
 const { githubUserAccessToken } = require("../../lib/config");
 
 const client = new ApolloClient({
-    link: new HttpLink({
-        uri: "https://api.github.com/graphql",
-        fetch,
-        headers: {
-            authorization: `Bearer ${githubUserAccessToken}`
-        }
-    }),
-    cache: new InMemoryCache()
+  link: new HttpLink({
+    uri: "https://api.github.com/graphql",
+    fetch,
+    headers: {
+      authorization: `Bearer ${githubUserAccessToken}`
+    }
+  }),
+  cache: new InMemoryCache()
 });
 
-const getUserData = async (userName) => {
+const getUserData = async userName => {
   return client.query({
     query: gql`{
             user(login: ${userName}) {
