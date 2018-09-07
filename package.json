@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "node_modules/.bin/nodemon npm run start",
     "start": "node index.js",
-    "test": "jest --forceExit --coverage --verbose",
-    "lint-fix": "prettier --write src/**/*.ts && prettier --write src/*.ts",
-    "lint": "prettier src/**/*.ts && prettier src/*.ts"
+    "test": "NODE_ENV=test jest",
+    "lint-fix": "prettier --write src/**/*.js && prettier --write src/*.js && prettier --write __tests__/*.js",
+    "lint": "prettier src/**/*.js && prettier src/*.js"
   },
   "author": "Will Garcia",
   "license": "ISC",
@@ -18,6 +18,7 @@
     "apollo-link-http": "^1.5.4",
     "body-parser": "^1.18.3",
     "celebrate": "^8.0.0",
+    "cors": "^2.8.4",
     "cross-fetch": "^2.2.2",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
@@ -27,6 +28,16 @@
     "log4js": "^2.10.0"
   },
   "devDependencies": {
-    "nodemon": "^1.17.5"
+    "jest": "^23.5.0",
+    "nodemon": "^1.17.5",
+    "supertest": "^3.3.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "testMatch": [
+      "**/__tests__/*.+(js)"
+    ]
   }
 }
