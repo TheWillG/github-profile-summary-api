@@ -1,0 +1,32 @@
+{
+  "name": "github-profile-summary-backend",
+  "version": "1.0.0",
+  "description": "github-profile-summary backend",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "node_modules/.bin/nodemon npm run start",
+    "start": "node index.js",
+    "test": "jest --forceExit --coverage --verbose",
+    "lint-fix": "prettier --write src/**/*.ts && prettier --write src/*.ts",
+    "lint": "prettier src/**/*.ts && prettier src/*.ts"
+  },
+  "author": "Will Garcia",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-boost": "^0.1.12",
+    "apollo-cache-inmemory": "^1.2.6",
+    "apollo-link-http": "^1.5.4",
+    "body-parser": "^1.18.3",
+    "celebrate": "^8.0.0",
+    "cross-fetch": "^2.2.2",
+    "dotenv": "^6.0.0",
+    "express": "^4.16.3",
+    "graphql": "^0.13.2",
+    "graphql-tag": "^2.9.2",
+    "helmet": "^3.13.0",
+    "log4js": "^2.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.5"
+  }
+}
