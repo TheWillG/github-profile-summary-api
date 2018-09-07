@@ -1,7 +1,7 @@
 const express = require("express");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
-const cors = require('cors');
+const cors = require("cors");
 const controllers = require("./controllers");
 const { errors } = require("celebrate");
 
