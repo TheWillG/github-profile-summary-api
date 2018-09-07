@@ -1,2 +1,2 @@
 # GitHub Profile Summary Backend
-Powered by TypeScript, Express, MongoDB, and Joi.
+Powered by NodeJS & Express, and Joi.
