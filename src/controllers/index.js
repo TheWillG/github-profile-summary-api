@@ -1,7 +1,6 @@
 const express = require("express");
 const githubController = require("./githubController");
 const githubValidator = require("./validators/github");
-const { getPing } = require("./pingController");
 
 const router = express.Router();
 
@@ -11,6 +10,6 @@ router.get(
   githubController.getUserData
 );
 
-router.get("/ping", getPing);
+router.get("/ping", (req, res) => res.status(200).send());
 
 module.exports = router;
