@@ -25,6 +25,7 @@ const getUserData = async userName => {
                 name
                 bio
                 url
+                company
                 websiteUrl
                 email
                 createdAt
