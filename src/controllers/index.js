@@ -10,4 +10,6 @@ router.get(
   githubController.getUserData
 );
 
+router.get("/ping", (req, res) => res.status(200).send());
+
 module.exports = router;
