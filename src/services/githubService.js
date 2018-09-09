@@ -33,6 +33,32 @@ const getUserData = async userName => {
                 avatarUrl
                 isBountyHunter
                 isHireable
+                followers {
+                  totalCount
+                }
+                following {
+                  totalCount
+                }
+                repositories(privacy: PUBLIC, first: 30, orderBy: { field: UPDATED_AT, direction: ASC }) {
+                  totalCount
+                  edges {
+                    node {
+                      name
+                      url
+                      description
+                      updatedAt
+                    }
+                  }
+                }
+                gists(privacy: PUBLIC) {
+                  totalCount
+                }
+                issues {
+                  totalCount
+                }
+                pullRequests {
+                  totalCount
+                }
             }
         }`
   });
