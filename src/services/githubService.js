@@ -39,7 +39,7 @@ const getUserData = async userName => {
                 following {
                   totalCount
                 }
-                repositories(privacy: PUBLIC, first: 30, orderBy: { field: UPDATED_AT, direction: ASC }) {
+                repositories(privacy: PUBLIC, first: 30, orderBy: { field: UPDATED_AT, direction: DESC }) {
                   totalCount
                   edges {
                     node {
@@ -47,6 +47,14 @@ const getUserData = async userName => {
                       url
                       description
                       updatedAt
+                      languages(first: 3, orderBy: { field: SIZE, direction: DESC }) {
+                        edges {
+                          node {
+                            color
+                            name
+                          }
+                        }
+                      }
                     }
                   }
                 }
