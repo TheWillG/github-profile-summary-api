@@ -1,5 +1,6 @@
 const fetch = require("cross-fetch");
 const gql = require("graphql-tag");
+const request = require("request-promise");
 const { ApolloClient } = require("apollo-boost");
 const { HttpLink } = require("apollo-link-http");
 const { InMemoryCache } = require("apollo-cache-inmemory");
@@ -17,7 +18,19 @@ const client = new ApolloClient({
 });
 
 const getUserData = async userName => {
-  return client.query({
+
+  const requestOptions = {
+    uri: `https://api.github.com/users/${userName}/events/public`,
+    headers: {
+      authorization: `Bearer ${githubUserAccessToken}`,
+      "User-Agent": "TheWillG"
+    },
+    json: true
+  };
+
+  // Run both API requests in parallel
+  const eventsPromise = request(requestOptions);
+  const graphQlResponsePromise = client.query({
     query: gql`{
             user(login: ${userName}) {
                 id
@@ -70,6 +83,18 @@ const getUserData = async userName => {
             }
         }`
   });
+
+  // Wait for all async calls to return
+  const graphQlResponse = await graphQlResponsePromise;
+  const events = await eventsPromise;
+
+  const userData = Object.assign({
+    ...graphQlResponse.data.user
+  }, {
+    events: events.slice(0, 10)
+  });
+
+  return userData;
 };
 
 module.exports = getUserData;

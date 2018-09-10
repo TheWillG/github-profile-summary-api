@@ -25,7 +25,8 @@
     "graphql": "^0.13.2",
     "graphql-tag": "^2.9.2",
     "helmet": "^3.13.0",
-    "log4js": "^2.10.0"
+    "log4js": "^2.10.0",
+    "request-promise": "^4.2.2"
   },
   "devDependencies": {
     "jest": "^23.5.0",
