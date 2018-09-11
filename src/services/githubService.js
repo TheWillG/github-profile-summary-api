@@ -4,7 +4,7 @@ const request = require("request-promise");
 const { ApolloClient } = require("apollo-boost");
 const { HttpLink } = require("apollo-link-http");
 const { InMemoryCache } = require("apollo-cache-inmemory");
-const { githubUserAccessToken } = require("../../lib/config");
+const { githubUserAccessToken, logger, eventTypes } = require("../../lib/config");
 
 const client = new ApolloClient({
   link: new HttpLink({
@@ -32,6 +32,9 @@ const getUserData = async userName => {
   const eventsPromise = request(requestOptions);
   const graphQlResponsePromise = client.query({
     query: gql`{
+            rateLimit {
+              remaining
+            }
             user(login: ${userName}) {
                 id
                 login
@@ -91,10 +94,25 @@ const getUserData = async userName => {
   const userData = Object.assign({
     ...graphQlResponse.data.user
   }, {
-    events: events.slice(0, 10)
+    events: formatEvents(events)
   });
+  logger.info(`User Requested: ${userName}`);
+  logger.info(`Remaining Limit: ${graphQlResponse.data.rateLimit.remaining}`);
 
   return userData;
+};
+
+const formatEvents = events => {
+  return events.filter(event => eventTypes.includes(event.type))
+          .map(({ type, repo, payload, created_at }) => {
+            return {
+              type,
+              repo,
+              action: payload.action,
+              created_at
+            }
+          })
+          .slice(0, 10);
 };
 
 module.exports = getUserData;
