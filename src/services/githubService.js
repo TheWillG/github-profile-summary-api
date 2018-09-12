@@ -105,12 +105,17 @@ const getUserData = async userName => {
 const formatEvents = events => {
   return events.filter(event => eventTypes.includes(event.type))
           .map(({ type, repo, payload, created_at }) => {
-            return {
+            let obj = {
               type,
               repo,
               action: payload.action,
+              ref_type: payload.ref_type,
               created_at
             }
+            if (payload.pull_request) {
+              obj = Object.assign(obj, { merged: payload.pull_request.merged_at != null });
+            }
+            return obj;
           })
           .slice(0, 10);
 };
