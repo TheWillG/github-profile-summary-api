@@ -19,7 +19,7 @@ const client = new ApolloClient({
 
 const getUserData = async userName => {
 
-  const requestOptions = {
+  const eventRequestOptions = {
     uri: `https://api.github.com/users/${userName}/events/public`,
     headers: {
       authorization: `Bearer ${githubUserAccessToken}`,
@@ -29,7 +29,7 @@ const getUserData = async userName => {
   };
 
   // Run both API requests in parallel
-  const eventsPromise = request(requestOptions);
+  const eventsPromise = request(eventRequestOptions);
   const graphQlResponsePromise = client.query({
     query: gql`{
             rateLimit {
@@ -89,12 +89,14 @@ const getUserData = async userName => {
 
   // Wait for all async calls to return
   const graphQlResponse = await graphQlResponsePromise;
+  const repoLanguagePercents = await getLanguageData(userName, graphQlResponse.data.user.repositories.edges);
   const events = await eventsPromise;
 
   const userData = Object.assign({
     ...graphQlResponse.data.user
   }, {
-    events: formatEvents(events)
+    events: formatEvents(events),
+    repoLanguagePercents
   });
   logger.info(`User Requested: ${userName}`);
   logger.info(`Remaining Limit: ${graphQlResponse.data.rateLimit.remaining}`);
@@ -118,6 +120,37 @@ const formatEvents = events => {
             return obj;
           })
           .slice(0, 10);
+};
+
+const getLanguageData = async (userName, repos) => {
+  const languagePercents = {};
+  for(const { node } of repos) {
+    const languageRequestOptions = {
+      uri: `https://api.github.com/repos/${userName}/${node.name}/languages`,
+      headers: {
+        authorization: `Bearer ${githubUserAccessToken}`,
+        "User-Agent": "TheWillG"
+      },
+      json: true
+    };
+    try {
+      let res = await request(languageRequestOptions);
+      res = calcLanguagePercents(res);
+      languagePercents[node.name] = res;
+    } catch (e) {
+      console.log('error', e);
+    }
+  }
+  return languagePercents;
+};
+
+const calcLanguagePercents = languages => {
+  let total = Object.keys(languages).map(key => languages[key]).reduce((a, b) => a + b, 0);
+  let percents = {};
+  for(const lang in languages) {
+    percents[lang] = Math.round(parseFloat(languages[lang]) / total.toFixed(2) * 100, 2);
+  }
+  return percents;
 };
 
 module.exports = getUserData;
