@@ -89,14 +89,15 @@ const getUserData = async userName => {
 
   // Wait for all async calls to return
   const graphQlResponse = await graphQlResponsePromise;
-  const repoLanguagePercents = await getLanguageData(userName, graphQlResponse.data.user.repositories.edges);
+  const languagePercents = await getLanguageData(userName, graphQlResponse.data.user.repositories.edges);
   const events = await eventsPromise;
 
   const userData = Object.assign({
     ...graphQlResponse.data.user
   }, {
     events: formatEvents(events),
-    repoLanguagePercents
+    repoLanguagePercents: languagePercents.repoLanguagePercents,
+    userLanguagePercents: languagePercents.userLanguagePercents
   });
   logger.info(`User Requested: ${userName}`);
   logger.info(`Remaining Limit: ${graphQlResponse.data.rateLimit.remaining}`);
@@ -123,7 +124,8 @@ const formatEvents = events => {
 };
 
 const getLanguageData = async (userName, repos) => {
-  const languagePercents = {};
+  const repoLanguagePercents = {};
+  const results = [];
   for(const { node } of repos) {
     const languageRequestOptions = {
       uri: `https://api.github.com/repos/${userName}/${node.name}/languages`,
@@ -135,22 +137,50 @@ const getLanguageData = async (userName, repos) => {
     };
     try {
       let res = await request(languageRequestOptions);
-      res = calcLanguagePercents(res);
-      languagePercents[node.name] = res;
+      results.push(res);
+      res = calcLanguagePercentsForRepo(res);
+      repoLanguagePercents[node.name] = res;
     } catch (e) {
       console.log('error', e);
     }
   }
-  return languagePercents;
+  const userLanguagePercents = calcLanguagePercentsForUser(results);
+  return { repoLanguagePercents, userLanguagePercents };
 };
 
-const calcLanguagePercents = languages => {
-  let total = Object.keys(languages).map(key => languages[key]).reduce((a, b) => a + b, 0);
+const calcLanguagePercentsForRepo = languages => {
+  let total = Object.keys(languages).map(key => languages[key]).reduce((total, bytes) => total + bytes, 0);
   let percents = {};
-  for(const lang in languages) {
-    percents[lang] = Math.round(parseFloat(languages[lang]) / total.toFixed(2) * 100, 2);
+  for (const lang in languages) {
+    percents[lang] = Math.round(parseFloat(languages[lang]) / total.toFixed(2) * 100 * 100) / 100;
+    if (percents[lang] < 0) {
+      delete percents[lang];
+    }
   }
   return percents;
+};
+
+const calcLanguagePercentsForUser = repos => {
+  const total = repos.reduce((total, languages) => {
+    return total + Object.keys(languages).map(key => languages[key]).reduce((repoTotal, bytes) => repoTotal + bytes, 0);
+  }, 0);
+  const languages = {};
+  for (const repo of repos) {
+    for (const lang in repo) {
+      if (languages[lang] === undefined) {
+        languages[lang] = repo[lang];
+      } else {
+        languages[lang] += repo[lang];
+      }
+    }
+  }
+  for (const lang in languages) {
+    languages[lang] = Math.round(languages[lang].toFixed(2) / total * 100 * 100) / 100;
+    if (languages[lang] <= 0) {
+      delete languages[lang];
+    }
+  }
+  return languages;
 };
 
 module.exports = getUserData;
