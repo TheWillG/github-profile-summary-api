@@ -127,8 +127,13 @@ const getLanguageData = async (userName, repos) => {
   const repoLanguagePercents = [];
   let totalBytes = 0;
   for(const { node } of repos) {
+    const repoOwnerReg = /https\:\/\/github.com\/(.*?)\/.*$/.exec(node.url);
+    let repoOwner = userName;
+    if (repoOwnerReg.length > 1) {
+      repoOwner = repoOwnerReg[1];
+    }
     const languageRequestOptions = {
-      uri: `https://api.github.com/repos/${userName}/${node.name}/languages`,
+      uri: `https://api.github.com/repos/${repoOwner}/${node.name}/languages`,
       headers: {
         authorization: `Bearer ${githubUserAccessToken}`,
         "User-Agent": "TheWillG"
