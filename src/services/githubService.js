@@ -4,7 +4,8 @@ const request = require("request-promise");
 const { ApolloClient } = require("apollo-boost");
 const { HttpLink } = require("apollo-link-http");
 const { InMemoryCache } = require("apollo-cache-inmemory");
-const { githubUserAccessToken, logger, eventTypes } = require("../../lib/config");
+const { githubUserAccessToken, logger } = require("../../lib/config");
+const { formatEvents, calcLanguagePercentsForRepo, calcLanguagePercentsForUser, formatCommits } = require('../helpers/dataFormatHelper');
 
 const client = new ApolloClient({
   link: new HttpLink({
@@ -17,19 +18,21 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
-const getUserData = async userName => {
+const reflect = p => p.then(value => ({value, status: "resolved" }), e => ({e, status: "rejected" }));
 
-  const eventRequestOptions = {
-    uri: `https://api.github.com/users/${userName}/events/public`,
+const getEventRequestOptions = (userName, page) => {
+  return {
+    uri: `https://api.github.com/users/${userName}/events/public?page=${page}`,
     headers: {
       authorization: `Bearer ${githubUserAccessToken}`,
       "User-Agent": "TheWillG"
     },
     json: true
   };
+}
 
-  // Run both API requests in parallel
-  const eventsPromise = request(eventRequestOptions);
+const getUserData = async userName => {
+
   const graphQlResponsePromise = client.query({
     query: gql`{
             rateLimit {
@@ -87,40 +90,36 @@ const getUserData = async userName => {
         }`
   });
 
-  // Wait for all async calls to return
-  const graphQlResponse = await graphQlResponsePromise;
-  const languagePercents = await getLanguageData(userName, graphQlResponse.data.user.repositories.edges);
-  const events = await eventsPromise;
 
+  // Run these requests in parallel, avoid fail-fast
+  const [graphQlResponse, eventsPage1, eventsPage2, eventsPage3] = await Promise.all([
+    graphQlResponsePromise,
+    request(getEventRequestOptions(userName, 1)),
+    request(getEventRequestOptions(userName, 2)),
+    request(getEventRequestOptions(userName, 3))
+  ].map(reflect));
+  const events = [eventsPage1, eventsPage2, eventsPage3]
+    .filter(event => event.status === 'resolved')
+    .map(event => formatEvents(event.value))
+    .reduce((combined, event) => [...combined, ...event], []);
+  
+  if (graphQlResponse.status === 'rejected') {
+    throw new Error('Could not retrieve user');
+  }
+  
+  const languagePercents = await getLanguageData(userName, graphQlResponse.value.data.user.repositories.edges);
   const userData = Object.assign({
-    ...graphQlResponse.data.user
+    ...graphQlResponse.value.data.user
   }, {
-    events: formatEvents(events),
+    events: events.slice(0, 10),
+    commits: formatCommits(events),
     repoLanguagePercents: languagePercents.repoLanguagePercents,
     userLanguagePercents: languagePercents.userLanguagePercents
   });
   logger.info(`User Requested: ${userName}`);
-  logger.info(`Remaining Limit: ${graphQlResponse.data.rateLimit.remaining}`);
+  logger.info(`Remaining Limit: ${graphQlResponse.value.data.rateLimit.remaining}`);
 
   return userData;
-};
-
-const formatEvents = events => {
-  return events.filter(event => eventTypes.includes(event.type))
-          .map(({ type, repo, payload, created_at }) => {
-            let obj = {
-              type,
-              repo,
-              action: payload.action,
-              ref_type: payload.ref_type,
-              created_at
-            }
-            if (payload.pull_request) {
-              obj = Object.assign(obj, { merged: payload.pull_request.merged_at != null });
-            }
-            return obj;
-          })
-          .slice(0, 10);
 };
 
 const getLanguageData = async (userName, repos) => {
@@ -153,34 +152,6 @@ const getLanguageData = async (userName, repos) => {
   return { repoLanguagePercents, userLanguagePercents };
 };
 
-const calcLanguagePercentsForRepo = languages => {
-  let total = Object.keys(languages).map(key => languages[key]).reduce((total, bytes) => total + bytes, 0);
-  let percents = [];
-  for (const lang in languages) {
-    percents.push({
-      name: lang,
-      percent: Math.round(parseFloat(languages[lang]) / total.toFixed(2) * 100 * 100) / 100,
-      bytes: languages[lang]
-    });
-  }
-  return percents;
-};
 
-const calcLanguagePercentsForUser = (total, allLanguages) => {
-  const langs = allLanguages.reduce((combined, repos) => [...combined, ...repos.languages], []);
-  let totals = [];
-  for (const lang in langs) {
-    let index = totals.findIndex((value) => value.name === langs[lang].name);
-    if (index === -1) {
-      totals.push({ name: langs[lang].name, bytes: langs[lang].bytes });
-    } else {
-      totals[index].bytes += langs[lang].bytes;
-    }
-  }
-  totals = totals.map(lang => {
-    return { name: lang.name, percent: Math.round(lang.bytes.toFixed(2) / total * 100 * 100) / 100, bytes: lang.bytes }
-  });
-  return totals;
-};
 
 module.exports = getUserData;
