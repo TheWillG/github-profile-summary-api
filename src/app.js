@@ -5,12 +5,28 @@ const cors = require("cors");
 const controllers = require("./controllers");
 const { errors } = require("celebrate");
 
+const whitelist = require("../lib/config/index.js").whitelist;
+
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}
+
 const app = express();
 app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use("/api/v1/", controllers);
+
+// https://github.com/expressjs/cors/issues/71
+app.use(function(req,res,next){ req.headers.origin = req.headers.origin || req.headers.host; next(); })
+app.use("/api/v1/", cors(corsOptions), controllers);
+
 app.use(errors());
 
 module.exports = app;
