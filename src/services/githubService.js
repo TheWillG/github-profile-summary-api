@@ -92,18 +92,24 @@ const getUserData = async userName => {
 
 
   // Run these requests in parallel, avoid fail-fast
-  const [graphQlResponse, eventsPage1, eventsPage2, eventsPage3] = await Promise.all([
+  const [graphQlResponse, ...eventsPages] = await Promise.all([
     graphQlResponsePromise,
     request(getEventRequestOptions(userName, 1)),
     request(getEventRequestOptions(userName, 2)),
-    request(getEventRequestOptions(userName, 3))
+    request(getEventRequestOptions(userName, 3)),
+    request(getEventRequestOptions(userName, 4)),
+    request(getEventRequestOptions(userName, 5)),
+    request(getEventRequestOptions(userName, 6)),
+    request(getEventRequestOptions(userName, 7)),
+    request(getEventRequestOptions(userName, 8))
   ].map(reflect));
-  const events = [eventsPage1, eventsPage2, eventsPage3]
+  const events = eventsPages
     .filter(event => event.status === 'resolved')
     .map(event => formatEvents(event.value))
     .reduce((combined, event) => [...combined, ...event], []);
   
   if (graphQlResponse.status === 'rejected') {
+    console.log('graphQlResponse.e', graphQlResponse.e);
     throw new Error('Could not retrieve user');
   }
   
