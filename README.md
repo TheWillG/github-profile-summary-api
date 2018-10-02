@@ -1,5 +1,5 @@
 # GitHub Profile Summary Backend
-Powered by NodeJS, Express, and Joi.
+Powered by [https://nodejs.org/](NodeJS), [http://expressjs.com/](Express), and [https://github.com/hapijs/joi](Joi).
 
 Hosted at on [Google App Engine](https://cloud.google.com/appengine/).
 
@@ -8,6 +8,8 @@ Frontend React app for this project is located here: https://github.com/theblind
 ## Install
 
 `git clone https://github.com/TheWillG/github-profile-summary-api.git`
+
+`cd github-profile-summary-api`
 
 `npm install`
 
