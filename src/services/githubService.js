@@ -111,7 +111,7 @@ const getUserData = async userName => {
     repoLanguagePercents, 
     userLanguagePercents 
   } = await getLanguageData(userName, graphQlResponse.value.data.user.repositories.edges);
-  const userData = Object.assign({
+  const userData = Object.assign({}, {
     ...graphQlResponse.value.data.user
   }, {
     events: events.slice(0, 10),
