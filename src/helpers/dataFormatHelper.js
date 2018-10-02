@@ -11,7 +11,7 @@ const formatEvents = events => {
         created_at
       }
       if (payload.pull_request) {
-        obj = Object.assign(obj, { merged: payload.pull_request.merged_at != null });
+        obj = Object.assign({}, obj, { merged: payload.pull_request.merged_at != null });
       }
       return obj;
     });
