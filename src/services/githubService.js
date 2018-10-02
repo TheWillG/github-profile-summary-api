@@ -107,14 +107,17 @@ const getUserData = async userName => {
     throw new Error('Could not retrieve user');
   }
   
-  const languagePercents = await getLanguageData(userName, graphQlResponse.value.data.user.repositories.edges);
+  const { 
+    repoLanguagePercents, 
+    userLanguagePercents 
+  } = await getLanguageData(userName, graphQlResponse.value.data.user.repositories.edges);
   const userData = Object.assign({
     ...graphQlResponse.value.data.user
   }, {
     events: events.slice(0, 10),
     commits: formatCommits(events),
-    repoLanguagePercents: languagePercents.repoLanguagePercents,
-    userLanguagePercents: languagePercents.userLanguagePercents
+    repoLanguagePercents,
+    userLanguagePercents
   });
   logger.info(`User Requested: ${userName}`);
   logger.info(`Remaining Limit: ${graphQlResponse.value.data.rateLimit.remaining}`);
