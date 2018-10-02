@@ -148,7 +148,7 @@ const getLanguageData = async (userName, repos) => {
       const languages = calcLanguagePercentsForRepo(res);
       repoLanguagePercents.push({ repo: node.name, languages });
     } catch (e) {
-      console.log('error', e);
+      logger.error(`Error getting language data ${JSON.stringify(e)}`);
     }
   }
   const userLanguagePercents = calcLanguagePercentsForUser(totalBytes, repoLanguagePercents);
