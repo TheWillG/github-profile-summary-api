@@ -82,6 +82,9 @@ const getUserData = async userName => {
                           }
                         }
                       }
+                      stargazers {
+                        totalCount
+                      }
                     }
                   }
                 }
@@ -126,6 +129,11 @@ const getUserData = async userName => {
     userName,
     graphQlResponse.value.data.user.repositories.edges
   );
+
+  const totalStars = getStarGazers(
+    graphQlResponse.value.data.user.repositories.edges
+  );
+
   const userData = Object.assign(
     {},
     {
@@ -136,7 +144,8 @@ const getUserData = async userName => {
       commits: formatCommits(events),
       topLanguage: calcTopLanguage(userLanguagePercents),
       repoLanguagePercents,
-      userLanguagePercents
+      userLanguagePercents,
+      totalStars: totalStars
     }
   );
   logger.info(`User Requested: ${userName}`);
@@ -178,6 +187,10 @@ const getLanguageData = async (userName, repos) => {
 const calcTopLanguage = userLanguagePercents => {
   const sortedLanguages = userLanguagePercents.sort((a, b) => b.percent - a.percent);
   return sortedLanguages[0] ? sortedLanguages[0].name : '';
+};
+
+const getStarGazers = repos => {
+  return repos.map(x => x.node.stargazers.totalCount).reduce((x, y) => x + y);
 };
 
 module.exports = getUserData;
