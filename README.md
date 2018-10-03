@@ -1,7 +1,9 @@
 # GitHub Profile Summary Backend
 Powered by [https://nodejs.org/](NodeJS), [http://expressjs.com/](Express), and [https://github.com/hapijs/joi](Joi).
 
-Hosted at on [Google App Engine](https://cloud.google.com/appengine/).
+The web app is hosted at [https://githubprofilesummary.com](https://www.githubprofilesummary.com/) on [Netlify](https://www.netlify.com/).
+
+This API is hosted on [Google App Engine](https://cloud.google.com/appengine/).
 
 Frontend React app for this project is located here: https://github.com/theblindprophet/github-profile-summary.
 
