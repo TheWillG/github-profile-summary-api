@@ -21,8 +21,6 @@ app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-// https://github.com/expressjs/cors/issues/71
 app.use(function(req,res,next){ req.headers.origin = req.headers.origin || req.headers.host; next(); })
 app.use("/api/v1/", cors(corsOptions), controllers);
 
