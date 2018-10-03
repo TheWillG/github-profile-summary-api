@@ -52,7 +52,7 @@ const formatCommits = events => {
   events = events.filter(event => event.type === 'PushEvent');
   events.forEach(event => {
     const date = new Date(event.created_at);
-    const id = `${date.getDate()}${date.getMonth()}${date.getFullYear}`;
+    const id = `${date.getDate()}${date.getMonth()}${date.getFullYear()}`;
     const commitIndex = commits.findIndex(commit => commit.id === id);
     if (commitIndex >= 0) {
       commits[commitIndex].total += 1;

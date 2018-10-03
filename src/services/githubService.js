@@ -122,6 +122,7 @@ const getUserData = async userName => {
   }, {
     events: events.slice(0, 10),
     commits: formatCommits(events),
+    topLanguage: calculatedTopLanguage(userLanguagePercents),
     repoLanguagePercents,
     userLanguagePercents
   });
@@ -161,6 +162,18 @@ const getLanguageData = async (userName, repos) => {
   return { repoLanguagePercents, userLanguagePercents };
 };
 
+const calculatedTopLanguage = (userLanguagePercents) => {
+  var topLanguage = {
+    percent: 0
+  };
 
+  userLanguagePercents.forEach(function (language) {
+    if (language.percent > topLanguage.percent){
+      topLanguage = language;
+    }
+  });
+
+  return topLanguage.name;
+}
 
 module.exports = getUserData;
