@@ -11,7 +11,7 @@ const formatEvents = events => {
         created_at
       }
       if (payload.pull_request) {
-        obj = Object.assign(obj, { merged: payload.pull_request.merged_at != null });
+        obj = Object.assign({}, obj, { merged: payload.pull_request.merged_at != null });
       }
       return obj;
     });
@@ -52,7 +52,7 @@ const formatCommits = events => {
   events = events.filter(event => event.type === 'PushEvent');
   events.forEach(event => {
     const date = new Date(event.created_at);
-    const id = `${date.getDate()}${date.getMonth()}${date.getFullYear}`;
+    const id = `${date.getDate()}${date.getMonth()}${date.getFullYear()}`;
     const commitIndex = commits.findIndex(commit => commit.id === id);
     if (commitIndex >= 0) {
       commits[commitIndex].total += 1;
