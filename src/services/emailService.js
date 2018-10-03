@@ -4,13 +4,13 @@ const { mailgunApiKey, mailgunDomain } = require('../../lib/config');
 const mailgunJSClient = mailgunJS({ apiKey: mailgunApiKey, domain: mailgunDomain });
 const mail = mailgunJSClient.messages();
 
-const sendEmail = async (email, message, subject) =>
+const sendEmail = async (from, to, text, subject) =>
   new Promise(resolve => {
     const data = {
-      from: 'noreply@thewillg.com',
-      to: email,
-      subject,
-      text: message
+      from,
+      to,
+      text,
+      subject
     };
 
     mail.send(data, (error, body) => {
