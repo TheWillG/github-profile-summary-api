@@ -63,6 +63,9 @@ const getUserData = async userName => {
                 following {
                   totalCount
                 }
+                starredRepositories {
+                  totalCount
+                }
                 repositories(privacy: PUBLIC, first: 30, orderBy: { field: UPDATED_AT, direction: DESC }) {
                   totalCount
                   edges {

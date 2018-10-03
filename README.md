@@ -30,8 +30,10 @@ Tests are located at *\_\_tests__*
 | PORT | Port the app is run on. | 3000 |
 | LOGGER_LEVEL | Logger level configuration used by `log4js` package | info |
 | GITHUB_USERACCESS_TOKEN | Access token used to read from the Github API | 123456abcdef
+| MAILGUN_API_KEY | Mailgun API Key required to send mail | 123456abcdef
+| MAILGUN_DOMAIN | Mailgun Domain name required to send mail | subdomain.domain.com
 
-`GITHUB_USERACCESS_TOKEN` can be obtaineed [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
+`GITHUB_USERACCESS_TOKEN` can be obtained [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
 
 The environment variables are encrypted from *env* to *env.enc*.
 
