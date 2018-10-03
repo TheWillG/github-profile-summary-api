@@ -4,8 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const controllers = require("./controllers");
 const { errors } = require("celebrate");
-
-const whitelist = require("../lib/config/index.js").whitelist;
+const { whitelist } = require("../lib/config")
 
 var corsOptions = {
   origin: function (origin, callback) {
