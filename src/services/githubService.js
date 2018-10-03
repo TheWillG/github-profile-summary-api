@@ -5,7 +5,12 @@ const { ApolloClient } = require("apollo-boost");
 const { HttpLink } = require("apollo-link-http");
 const { InMemoryCache } = require("apollo-cache-inmemory");
 const { githubUserAccessToken, logger } = require("../../lib/config");
-const { formatEvents, calcLanguagePercentsForRepo, calcLanguagePercentsForUser, formatCommits } = require('../helpers/dataFormatHelper');
+const {
+  formatEvents,
+  calcLanguagePercentsForRepo,
+  calcLanguagePercentsForUser,
+  formatCommits
+} = require("../helpers/dataFormatHelper");
 
 const client = new ApolloClient({
   link: new HttpLink({
@@ -18,7 +23,8 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
-const reflect = p => p.then(value => ({value, status: "resolved" }), e => ({e, status: "rejected" }));
+const reflect = p =>
+  p.then(value => ({ value, status: "resolved" }), e => ({ e, status: "rejected" }));
 
 const getEventRequestOptions = (userName, page) => {
   return {
@@ -29,10 +35,9 @@ const getEventRequestOptions = (userName, page) => {
     },
     json: true
   };
-}
+};
 
 const getUserData = async userName => {
-
   const graphQlResponsePromise = client.query({
     query: gql`{
             rateLimit {
@@ -90,42 +95,47 @@ const getUserData = async userName => {
         }`
   });
 
-
   // Run these requests in parallel, avoid fail-fast
-  const [graphQlResponse, ...eventsPages] = await Promise.all([
-    graphQlResponsePromise,
-    request(getEventRequestOptions(userName, 1)),
-    request(getEventRequestOptions(userName, 2)),
-    request(getEventRequestOptions(userName, 3)),
-    request(getEventRequestOptions(userName, 4)),
-    request(getEventRequestOptions(userName, 5)),
-    request(getEventRequestOptions(userName, 6)),
-    request(getEventRequestOptions(userName, 7)),
-    request(getEventRequestOptions(userName, 8))
-  ].map(reflect));
+  const [graphQlResponse, ...eventsPages] = await Promise.all(
+    [
+      graphQlResponsePromise,
+      request(getEventRequestOptions(userName, 1)),
+      request(getEventRequestOptions(userName, 2)),
+      request(getEventRequestOptions(userName, 3)),
+      request(getEventRequestOptions(userName, 4)),
+      request(getEventRequestOptions(userName, 5)),
+      request(getEventRequestOptions(userName, 6)),
+      request(getEventRequestOptions(userName, 7)),
+      request(getEventRequestOptions(userName, 8))
+    ].map(reflect)
+  );
   const events = eventsPages
-    .filter(event => event.status === 'resolved')
+    .filter(event => event.status === "resolved")
     .map(event => formatEvents(event.value))
     .reduce((combined, event) => [...combined, ...event], []);
-  
-  if (graphQlResponse.status === 'rejected') {
-    console.log('graphQlResponse.e', graphQlResponse.e);
-    throw new Error('Could not retrieve user');
+
+  if (graphQlResponse.status === "rejected") {
+    console.log("graphQlResponse.e", graphQlResponse.e);
+    throw new Error("Could not retrieve user");
   }
-  
-  const { 
-    repoLanguagePercents, 
-    userLanguagePercents 
-  } = await getLanguageData(userName, graphQlResponse.value.data.user.repositories.edges);
-  const userData = Object.assign({}, {
-    ...graphQlResponse.value.data.user
-  }, {
-    events: events.slice(0, 10),
-    commits: formatCommits(events),
-    topLanguage: calculatedTopLanguage(userLanguagePercents),
-    repoLanguagePercents,
-    userLanguagePercents
-  });
+
+  const { repoLanguagePercents, userLanguagePercents } = await getLanguageData(
+    userName,
+    graphQlResponse.value.data.user.repositories.edges
+  );
+  const userData = Object.assign(
+    {},
+    {
+      ...graphQlResponse.value.data.user
+    },
+    {
+      events: events.slice(0, 10),
+      commits: formatCommits(events),
+      topLanguage: calcTopLanguage(userLanguagePercents),
+      repoLanguagePercents,
+      userLanguagePercents
+    }
+  );
   logger.info(`User Requested: ${userName}`);
   logger.info(`Remaining Limit: ${graphQlResponse.value.data.rateLimit.remaining}`);
 
@@ -135,7 +145,7 @@ const getUserData = async userName => {
 const getLanguageData = async (userName, repos) => {
   const repoLanguagePercents = [];
   let totalBytes = 0;
-  for(const { node } of repos) {
+  for (const { node } of repos) {
     const repoOwnerReg = /https\:\/\/github.com\/(.*?)\/.*$/.exec(node.url);
     let repoOwner = userName;
     if (repoOwnerReg.length > 1) {
@@ -162,18 +172,9 @@ const getLanguageData = async (userName, repos) => {
   return { repoLanguagePercents, userLanguagePercents };
 };
 
-const calculatedTopLanguage = (userLanguagePercents) => {
-  var topLanguage = {
-    percent: 0
-  };
-
-  userLanguagePercents.forEach(function (language) {
-    if (language.percent > topLanguage.percent){
-      topLanguage = language;
-    }
-  });
-
-  return topLanguage.name;
-}
+const calcTopLanguage = userLanguagePercents => {
+  const sortedLanguages = userLanguagePercents.sort((a, b) => b.percent - a.percent);
+  return sortedLanguages[0] ? sortedLanguages[0].name : '';
+};
 
 module.exports = getUserData;
