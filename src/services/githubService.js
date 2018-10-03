@@ -127,7 +127,7 @@ const getUserData = async userName => {
     graphQlResponse.value.data.user.repositories.edges
   );
 
-  const totalStars = await getStarGazers(
+  const totalStars = getStarGazers(
     graphQlResponse.value.data.user.repositories.edges
   );
 
@@ -186,7 +186,7 @@ const calcTopLanguage = userLanguagePercents => {
   return sortedLanguages[0] ? sortedLanguages[0].name : '';
 };
 
-const getStarGazers = async (repos) => {
+const getStarGazers = repos => {
   return repos.map(x => x.node.stargazers.totalCount).reduce((x, y) => x + y);
 };
 
