@@ -7,11 +7,11 @@ const { errors } = require("celebrate");
 const { whitelist } = require("../lib/config")
 
 var corsOptions = {
-  origin: function (origin, callback) {
+  origin: function (origin, next) {
     if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
+      next(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      next(new Error('Not allowed by CORS'));
     }
   }
 }
@@ -23,7 +23,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(function(req,res,next){ req.headers.origin = req.headers.origin || req.headers.host; next(); })
 app.use("/api/v1/", cors(corsOptions), controllers);
-
 app.use(errors());
 
 module.exports = app;
