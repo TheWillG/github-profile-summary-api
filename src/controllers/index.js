@@ -13,7 +13,7 @@ router.get(
 );
 
 router.post(
-  "/post/email",
+  "/email/user",
   emailValidator.postEmailData,
   emailController.postEmailData
 );
