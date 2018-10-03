@@ -5,6 +5,8 @@ const cors = require("cors");
 const controllers = require("./controllers");
 const { errors } = require("celebrate");
 const { whitelist } = require("../lib/config")
+const { isProduction } = require("../lib/config")
+
 
 var corsOptions = {
   origin: function (origin, next) {
@@ -21,8 +23,7 @@ app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(function(req,res,next){ req.headers.origin = req.headers.origin || req.headers.host; next(); })
-app.use("/api/v1/", cors(corsOptions), controllers);
 app.use(errors());
+if(isProduction) app.use(cors(corsOptions));
 
 module.exports = app;
