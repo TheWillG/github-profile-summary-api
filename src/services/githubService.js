@@ -174,7 +174,7 @@ const getLanguageData = async (userName, repos) => {
 
 const calcTopLanguage = userLanguagePercents => {
   const sortedLanguages = userLanguagePercents.sort((a, b) => b.percent - a.percent);
-  return sortedLanguages[0].name ? sortedLanguages[0].name : '';
+  return sortedLanguages[0] ? sortedLanguages[0].name : '';
 };
 
 module.exports = getUserData;
