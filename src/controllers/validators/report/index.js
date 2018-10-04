@@ -5,8 +5,8 @@ const postUserData = celebrate({
     userName: Joi.string().required(),
   },
   body: {
-    languageChart: Joi.string().dataURI().required(),
-    commitChart: Joi.string().dataURI().required()
+    languageChart: Joi.string().dataUri().required(),
+    commitChart: Joi.string().dataUri().required()
   }
 });
 
