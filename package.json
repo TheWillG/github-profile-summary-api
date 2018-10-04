@@ -1,7 +1,7 @@
 {
   "name": "github-profile-summary-backend",
   "version": "1.0.0",
-  "description": "github-profile-summary backend",
+  "description": "github-profile-summary backend r45ty54y54y54y54",
   "main": "dist/index.js",
   "scripts": {
     "dev": "node_modules/.bin/nodemon npm run start",
