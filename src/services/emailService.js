@@ -7,7 +7,9 @@ const mail = mailgunJSClient.messages();
 const sendEmail = async (from, to, text, subject) => {
   let html = `<p>${text}</p>`;
   html += "<br />";
-  html += "<small>This message was sent you from https://githubprofilesummary.com</small>";
+  html += `<p>Reply to ${from}</p>`;
+  html += "<br />";
+  html += "<small>This message was sent to you from https://githubprofilesummary.com</small>";
   return new Promise(resolve => {
     const data = {
       from,
