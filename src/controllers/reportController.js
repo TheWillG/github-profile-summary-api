@@ -5,8 +5,8 @@ const postUserData = async (req, res) => {
   try {
     res.status(200).send();
   } catch (e) {
-    logger.error(`Failed to post github user data with userName ${userName}`, e);
-    res.status(e.message.includes('retrieve') ? 400 : 500).send(e);
+    logger.error(`report failed to be generated`, e);
+    res.status(500).send(`report failed to be generated`);
   }
 };
 
