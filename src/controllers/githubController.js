@@ -1,11 +1,11 @@
 const { logger } = require('../../lib/config');
-const { getData, validateGitHubAccessToken } = require('../services/githubService');
+const { getUser, validateGitHubAccessToken } = require('../services/githubService');
 const { fetchUser, createUser } = require('../services/userService');
 
 const getUserData = async (req, res) => {
   const { userName } = req.params;
   try {
-    const userData = await getData(userName);
+    const userData = await getUser(userName);
     res.status(200).send(userData);
   } catch (e) {
     logger.error(`Failed to get github user data with userName ${userName}`, e);
