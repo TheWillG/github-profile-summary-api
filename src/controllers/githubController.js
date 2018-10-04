@@ -17,15 +17,20 @@ const postThumbsUp = async (req, res) => {
   const { userName } = req.params;
   const { accessToken } = req.body;
   try {
-    await validateGitHubAccessToken(accessToken);
+    const rater = await validateGitHubAccessToken(accessToken);
     const existingUser = await fetchUser({ userName });
     if(existingUser) {
-      existingUser.thumbs += 1;
-      await existingUser.save();
-      return status(200).send('Thumbs up added')
+      if(existingUser.raters.indexOf(rater.user.login) > -1) {
+        return res.status(400).send("You have already thumbed up this user!")
+      } else {
+        existingUser.thumbs += 1;
+        existingUser.raters.push(rater.user.login);
+        await existingUser.save();
+        return status(200).send('Thumbs up added')
+      }
     } else {
-      await createUser({ username, thumbs: 1 });
-      res.status(200).send('User received their first thumbs up!');
+      await createUser({ username, thumbs: 1, raters: [rater.user.login] });
+      return res.status(200).send('User received their first thumbs up!');
     }
   } catch (e) {
     logger.error('Failed to authenticate userAccessToken', e);
