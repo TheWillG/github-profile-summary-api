@@ -1,6 +1,6 @@
 const { logger } = require("../../lib/config");
 
-const postUserData = async (req, res) => {
+const postGenerateReport = async (req, res) => {
   const { userName } = req.params;
   try {
     res.status(200).send();
@@ -10,4 +10,4 @@ const postUserData = async (req, res) => {
   }
 };
 
-module.exports.postUserData = postUserData;
+module.exports.postGenerateReport = postGenerateReport;

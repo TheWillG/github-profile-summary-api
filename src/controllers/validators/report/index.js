@@ -1,6 +1,6 @@
 const { celebrate, Joi } = require("celebrate");
 
-const postUserData = celebrate({
+const postGenerateReport = celebrate({
   params: {
     userName: Joi.string().required(),
   },
@@ -10,4 +10,4 @@ const postUserData = celebrate({
   }
 });
 
-module.exports.postUserData = postUserData;
+module.exports.postGenerateReport = postGenerateReport;

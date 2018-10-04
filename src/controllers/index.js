@@ -24,8 +24,8 @@ router.post(
 
 router.post(
   "/github/userData/:userName/report",
-  reportValidator.postUserData,
-  reportController.postUserData
+  reportValidator.postGenerateReport,
+  reportController.postGenerateReport
 );
 
 router.get("/ping", (req, res) => res.status(200).send());
