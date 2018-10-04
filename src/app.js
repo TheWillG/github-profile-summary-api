@@ -5,9 +5,9 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const controllers = require("./controllers");
 const { errors } = require("celebrate");
-const { isTest } = require("../lib/config");
+const { mongoUrl, isTest } = require("../lib/config");
 
-if(!isTest) mongoose.connect(mongoUrl);
+if(!isTest) mongoose.connect(mongoUrl, { useNewUrlParser: true });
 const app = express();
 app.use(helmet());
 app.use(cors());
