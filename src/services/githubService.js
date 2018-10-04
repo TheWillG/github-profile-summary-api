@@ -1,20 +1,25 @@
-const fetch = require("cross-fetch");
-const gql = require("graphql-tag");
-const request = require("request-promise");
-const { ApolloClient } = require("apollo-boost");
-const { HttpLink } = require("apollo-link-http");
-const { InMemoryCache } = require("apollo-cache-inmemory");
-const { githubUserAccessToken, logger } = require("../../lib/config");
+const fetch = require('cross-fetch');
+const gql = require('graphql-tag');
+const request = require('request-promise');
+const { ApolloClient } = require('apollo-boost');
+const { HttpLink } = require('apollo-link-http');
+const { InMemoryCache } = require('apollo-cache-inmemory');
+const {
+  githubUserAccessToken,
+  githubClientId,
+  githubClientSecret,
+  logger
+} = require('../../lib/config');
 const {
   formatEvents,
   calcLanguagePercentsForRepo,
   calcLanguagePercentsForUser,
   formatCommits
-} = require("../helpers/dataFormatHelper");
+} = require('../helpers/dataFormatHelper');
 
 const client = new ApolloClient({
   link: new HttpLink({
-    uri: "https://api.github.com/graphql",
+    uri: 'https://api.github.com/graphql',
     fetch,
     headers: {
       authorization: `Bearer ${githubUserAccessToken}`
@@ -24,14 +29,17 @@ const client = new ApolloClient({
 });
 
 const reflect = p =>
-  p.then(value => ({ value, status: "resolved" }), e => ({ e, status: "rejected" }));
+  p.then(
+    value => ({ value, status: 'resolved' }),
+    e => ({ e, status: 'rejected' })
+  );
 
 const getEventRequestOptions = (userName, page) => {
   return {
     uri: `https://api.github.com/users/${userName}/events/public?page=${page}`,
     headers: {
       authorization: `Bearer ${githubUserAccessToken}`,
-      "User-Agent": "TheWillG"
+      'User-Agent': 'TheWillG'
     },
     json: true
   };
@@ -116,13 +124,13 @@ const getUserData = async userName => {
     ].map(reflect)
   );
   const events = eventsPages
-    .filter(event => event.status === "resolved")
+    .filter(event => event.status === 'resolved')
     .map(event => formatEvents(event.value))
     .reduce((combined, event) => [...combined, ...event], []);
 
-  if (graphQlResponse.status === "rejected") {
-    console.log("graphQlResponse.e", graphQlResponse.e);
-    throw new Error("Could not retrieve user");
+  if (graphQlResponse.status === 'rejected') {
+    console.log('graphQlResponse.e', graphQlResponse.e);
+    throw new Error('Could not retrieve user');
   }
 
   const { repoLanguagePercents, userLanguagePercents } = await getLanguageData(
@@ -149,7 +157,9 @@ const getUserData = async userName => {
     }
   );
   logger.info(`User Requested: ${userName}`);
-  logger.info(`Remaining Limit: ${graphQlResponse.value.data.rateLimit.remaining}`);
+  logger.info(
+    `Remaining Limit: ${graphQlResponse.value.data.rateLimit.remaining}`
+  );
 
   return userData;
 };
@@ -167,25 +177,33 @@ const getLanguageData = async (userName, repos) => {
       uri: `https://api.github.com/repos/${repoOwner}/${node.name}/languages`,
       headers: {
         authorization: `Bearer ${githubUserAccessToken}`,
-        "User-Agent": "TheWillG"
+        'User-Agent': 'TheWillG'
       },
       json: true
     };
     try {
       let res = await request(languageRequestOptions);
-      totalBytes += Object.keys(res).reduce((total, key) => total + res[key], 0);
+      totalBytes += Object.keys(res).reduce(
+        (total, key) => total + res[key],
+        0
+      );
       const languages = calcLanguagePercentsForRepo(res);
       repoLanguagePercents.push({ repo: node.name, languages });
     } catch (e) {
       logger.error(`Error getting language data ${JSON.stringify(e)}`);
     }
   }
-  const userLanguagePercents = calcLanguagePercentsForUser(totalBytes, repoLanguagePercents);
+  const userLanguagePercents = calcLanguagePercentsForUser(
+    totalBytes,
+    repoLanguagePercents
+  );
   return { repoLanguagePercents, userLanguagePercents };
 };
 
 const calcTopLanguage = userLanguagePercents => {
-  const sortedLanguages = userLanguagePercents.sort((a, b) => b.percent - a.percent);
+  const sortedLanguages = userLanguagePercents.sort(
+    (a, b) => b.percent - a.percent
+  );
   return sortedLanguages[0] ? sortedLanguages[0].name : '';
 };
 
@@ -193,4 +211,15 @@ const getStarGazers = repos => {
   return repos.map(x => x.node.stargazers.totalCount).reduce((x, y) => x + y);
 };
 
-module.exports = getUserData;
+const validateGitHubAccessToken = async accessToken => {
+  const githubRequestOpts = {
+    uri: `https://api.github.com/applications/${githubClientId}/tokens/${accessToken}`,
+    auth:
+      'Basic ' +
+      new Buffer(githubClientId + ':' + githubClientSecret).toString('base64')
+  };
+  await request(githubRequestOpts);
+};
+
+module.exports.getUserData = getUserData;
+module.exports.validateGitHubAccessToken = validateGitHubAccessToken;

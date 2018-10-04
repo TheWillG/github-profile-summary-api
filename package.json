@@ -27,6 +27,7 @@
     "helmet": "^3.13.0",
     "log4js": "^2.10.0",
     "mailgun-js": "^0.21.0",
+    "mongoose": "^5.3.1",
     "request-promise": "^4.2.2"
   },
   "devDependencies": {

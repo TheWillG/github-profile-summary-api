@@ -13,6 +13,12 @@ router.get(
 );
 
 router.post(
+  "/github/thumbsup/:username",
+  githubValidator.postThumbsUp,
+  githubController.postThumbsUp
+);
+
+router.post(
   "/email/user",
   emailValidator.postEmailData,
   emailController.postEmailData
