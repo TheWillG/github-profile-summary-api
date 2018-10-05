@@ -1,5 +1,5 @@
 const { logger } = require('../../lib/config');
-const { getData, validateGitHubAccessToken } = require('../services/githubService');
+const { getUser, validateGitHubAccessToken } = require('../services/githubService');
 const { fetchUser, createUser } = require('../services/userService');
 const { fetchFirebaseCredential, createFirebaseCredential, removeFirebaseCredential } = require('../services/firebaseCredentialService');
 

@@ -45,7 +45,7 @@ const getEventRequestOptions = (userName, page) => {
   };
 };
 
-const getUserData = async userName => {
+const getUser = async userName => {
   const graphQlResponsePromise = client.query({
     query: gql`{
             rateLimit {
@@ -221,5 +221,5 @@ const validateGitHubAccessToken = async accessToken => {
   await request(githubRequestOpts);
 };
 
-module.exports.getUserData = getUserData;
+module.exports.getUser = getUser;
 module.exports.validateGitHubAccessToken = validateGitHubAccessToken;
