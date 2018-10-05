@@ -19,6 +19,12 @@ router.post(
 );
 
 router.post(
+  "/github/firebaseCredentials",
+  githubValidator.postFirebaseCredential,
+  githubController.postFirebaseCredential
+);
+
+router.post(
   "/email/user",
   emailValidator.postEmailData,
   emailController.postEmailData
