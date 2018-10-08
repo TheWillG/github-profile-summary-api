@@ -6,7 +6,7 @@ const { fetchFirebaseCredential, createFirebaseCredential, removeFirebaseCredent
 const getUserData = async (req, res) => {
   const { userName } = req.params;
   try {
-    const userData = await getData(userName);
+    const userData = await getUser(userName);
     return res.status(200).send(userData);
   } catch (e) {
     logger.error(`Failed to get github user data with userName ${userName}`, e);
