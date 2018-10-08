@@ -211,15 +211,20 @@ const getStarGazers = repos => {
   return repos.map(x => x.node.stargazers.totalCount).reduce((x, y) => x + y);
 };
 
-const validateGitHubAccessToken = async accessToken => {
+const validateAccessToken = async accessToken => {
+  const encoded = Buffer.from(`${githubClientId}:${githubClientSecret}`).toString('base64');
+  const auth = `Basic ${encoded}`;
   const githubRequestOpts = {
     uri: `https://api.github.com/applications/${githubClientId}/tokens/${accessToken}`,
-    auth:
-      'Basic ' +
-      new Buffer(githubClientId + ':' + githubClientSecret).toString('base64')
+    headers: {
+      Authorization: auth,
+      'User-Agent': 'TheWillG'
+    },
+    json: true
   };
-  await request(githubRequestOpts);
+  const response = await request(githubRequestOpts);
+  return response;
 };
 
 module.exports.getUser = getUser;
-module.exports.validateGitHubAccessToken = validateGitHubAccessToken;
+module.exports.validateAccessToken = validateAccessToken;

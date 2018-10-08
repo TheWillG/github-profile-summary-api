@@ -3,7 +3,7 @@ const { Schema } = require("mongoose");
 
 const firebaseCredentialSchema = new Schema({
   firebaseUid: String,
-  githubAccessToken: String,
+  accessToken: String,
 });
 const FirebaseCredential = mongoose.model("FirebaseCredential", firebaseCredentialSchema);
 

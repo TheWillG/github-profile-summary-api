@@ -12,10 +12,16 @@ router.get(
   githubController.getUserData
 );
 
+router.get(
+  "/github/recommendations/:userName",
+  githubValidator.getRecommendations,
+  githubController.getRecommendations
+);
+
 router.post(
-  "/github/thumbsup/:username",
-  githubValidator.postThumbsUp,
-  githubController.postThumbsUp
+  "/github/recommendations/:userName",
+  githubValidator.postRecommendations,
+  githubController.postRecommendations
 );
 
 router.post(

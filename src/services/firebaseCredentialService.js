@@ -12,8 +12,8 @@ const updateFirebaseCredential = (id, query) => {
   return FirebaseCredential.findByIdAndUpdate({_id: id}, query, {new: true});
 }
 
-const removeFirebaseCredential = (id) => {
-  return FirebaseCredential.findByIdAndRemove({_id: id});
+const removeFirebaseCredential = async (query) => {
+  return FirebaseCredential.deleteMany(query);
 }
 
 module.exports = {

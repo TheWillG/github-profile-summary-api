@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
 
 const userSchema = new Schema({
-  username: String,
+  userName: String,
   raters: [String],
-  thumbs: { type: Number, default: 0 }
+  recommendations: { type: Number, default: 0 }
 });
 const User = mongoose.model("User", userSchema);
 
