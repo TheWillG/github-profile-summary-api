@@ -20,7 +20,8 @@ const corsOptions = {
 if(!isTest) mongoose.connect(mongoUrl, { useNewUrlParser: true });
 const app = express();
 app.use(helmet());
-if (isProduction) {
+console.log('is', isProduction);
+if (!isProduction) {
     app.use(cors(corsOptions));
 }
 app.use(bodyParser.urlencoded({ extended: true }));
