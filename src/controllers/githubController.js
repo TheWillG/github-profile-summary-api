@@ -1,7 +1,7 @@
 const { logger } = require('../../lib/config');
 const { getUser, validateAccessToken } = require('../services/githubService');
 const { fetchUser, createUser } = require('../services/userService');
-const { fetchFirebaseCredential, createFirebaseCredential, removeFirebaseCredential } = require('../services/firebaseCredentialService');
+const { fetchFirebaseCredential, createFirebaseCredential, updateFirebaseCredential, removeFirebaseCredential } = require('../services/firebaseCredentialService');
 
 const getUserData = async (req, res) => {
   const { userName } = req.params;
@@ -64,7 +64,12 @@ const postRecommendations = async (req, res) => {
 const postFirebaseCredential = async (req, res) => {
   const { accessToken, firebaseUid } = req.body;
   try {
-    await createFirebaseCredential({ accessToken, firebaseUid });
+    const existingFirebaseCredential = await fetchFirebaseCredential({ firebaseUid });
+    if(!existingFirebaseCredential) {
+      await createFirebaseCredential({ accessToken, firebaseUid });
+    } else {
+      await updateFirebaseCredential(existingFirebaseCredential.id, { accessToken });
+    }
   } catch (e) {
     logger.error('Failed to add accessToken', e);
     return res.status(500).send({ error: 'Failed to add accessToken' });
