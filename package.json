@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node_modules/.bin/nodemon npm run start",
     "start": "node index.js",
+    "pretest": "npm run lint",
     "test": "NODE_ENV=test jest",
     "lint-fix": "prettier --write src/**/*.js && prettier --write src/*.js && prettier --write __tests__/*.js",
     "lint": "prettier src/**/*.js && prettier src/*.js"
@@ -27,11 +28,13 @@
     "helmet": "^3.13.0",
     "log4js": "^2.10.0",
     "mailgun-js": "^0.21.0",
+    "mongoose": "^5.3.1",
     "request-promise": "^4.2.2"
   },
   "devDependencies": {
     "jest": "^23.5.0",
     "nodemon": "^1.17.5",
+    "prettier": "^1.14.3",
     "supertest": "^3.3.0"
   },
   "jest": {

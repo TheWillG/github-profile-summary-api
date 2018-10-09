@@ -34,6 +34,9 @@ Tests are located at *\_\_tests__*
 | GITHUB_USERACCESS_TOKEN | Access token used to read from the Github API | 123456abcdef
 | MAILGUN_API_KEY | Mailgun API Key required to send mail | 123456abcdef
 | MAILGUN_DOMAIN | Mailgun Domain name required to send mail | subdomain.domain.com
+| GITHUB_CLIENT_ID | GitHub client id | xxx |
+| GITHUB_CLIENT_SECRET | GitHub client secret | xxx |
+| MONGO_URL | MongoDB URL | xxx |
 
 `GITHUB_USERACCESS_TOKEN` can be obtained [here](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/).
 

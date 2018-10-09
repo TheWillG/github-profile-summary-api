@@ -2,9 +2,12 @@ const mongoose = require("mongoose");
 const { Schema } = require("mongoose");
 
 const userSchema = new Schema({
-  email: String,
-  password: String
+  userName: String,
+  raters: [String],
+  recommendations: { type: Number, default: 0 }
 });
-mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 
-module.exports = userSchema;
+module.exports = {
+  User
+};

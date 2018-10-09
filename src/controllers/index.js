@@ -16,6 +16,24 @@ router.get(
   githubController.getUserData
 );
 
+router.get(
+  "/github/recommendations/:userName",
+  githubValidator.getRecommendations,
+  githubController.getRecommendations
+);
+
+router.post(
+  "/github/recommendations/:userName",
+  githubValidator.postRecommendations,
+  githubController.postRecommendations
+);
+
+router.post(
+  "/github/firebaseCredentials",
+  githubValidator.postFirebaseCredential,
+  githubController.postFirebaseCredential
+);
+
 router.post(
   "/email/user",
   emailValidator.postEmailData,
